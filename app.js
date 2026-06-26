@@ -772,10 +772,11 @@ function renderLegend() {
   // diverging % change legend: a continuous blue (decline) -> white (no change)
   // -> red (increase) gradient bar, labeled at five anchors
   if (metric === "pctchange") {
-    const labels = ["−100%", "−50%", "0%", "50%", "100%"];
+    // top = +100% increase (deep red), bottom = −100% decline (deep blue)
+    const labels = ["100%", "50%", "0%", "−50%", "−100%"];
     el.legendList.innerHTML =
       `<li class="legend-gradient">` +
-      `<span class="gradient-bar" style="background:linear-gradient(to bottom, ${RAMP_DIV.join(", ")})"></span>` +
+      `<span class="gradient-bar" style="background:linear-gradient(to top, ${RAMP_DIV.join(", ")})"></span>` +
       `<span class="gradient-labels">${labels.map((l) => `<span>${l}</span>`).join("")}</span>` +
       `</li>`;
     return;
@@ -1093,12 +1094,32 @@ function buildChartWindow() {
   xTickSet = xTickIndices(); // recompute the fixed-count label positions
 }
 
+// light gray dashed horizontal line at y = 0% — only for the % change view,
+// marking the no-change baseline
+const zeroLinePlugin = {
+  id: "zeroLine",
+  beforeDatasetsDraw(c) {
+    if (state.metric !== "pctchange") return;
+    const y = c.scales.y.getPixelForValue(0);
+    if (y == null) return;
+    const { left, right } = c.chartArea;
+    const ctx = c.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = "rgba(120, 130, 140, 0.45)";
+    ctx.stroke();
+    ctx.restore();
+  },
+};
+
 // thin red vertical line marking where the forecast begins (the current month)
 const forecastLinePlugin = {
   id: "forecastLine",
   afterDatasetsDraw(c) {
-    // no observed/forecast split for the % change view, so no divider line
-    if (state.metric === "pctchange") return;
     const idx = chartWindow.indexOf(chartAnchorYM);
     if (idx < 0) return;
     const x = c.scales.x.getPixelForValue(idx);
@@ -1252,7 +1273,7 @@ function initChart() {
         },
       },
     },
-    plugins: [forecastLinePlugin],
+    plugins: [zeroLinePlugin, forecastLinePlugin],
   });
 }
 
@@ -1442,7 +1463,7 @@ function fmtAxisCases(value) {
 const TOUR_STEPS = [
   {
     welcome: true, // intro bubble — shown without a step number
-    title: "Welcome to CocciCast!",
+    title: "Welcome to <em>CocciCast</em>!",
     body: "This is a quick 5-step tutorial of how to read and explore the forecast. Use Next, or click the highlighted controls yourself.",
     placement: "center",
   },
@@ -1582,7 +1603,7 @@ function gotoTourStep(i) {
     tourEls.step.style.display = "";
     tourEls.step.textContent = `Step ${stepNo} of ${numberedTotal}`;
   }
-  tourEls.title.textContent = s.title;
+  tourEls.title.innerHTML = s.title;
   tourEls.body.textContent = s.body;
   tourEls.back.disabled = tourIndex === 0;
   tourEls.next.textContent = tourIndex === TOUR_STEPS.length - 1 ? "Done" : "Next";
