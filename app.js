@@ -1463,7 +1463,7 @@ function fmtAxisCases(value) {
 const TOUR_STEPS = [
   {
     welcome: true, // intro bubble — shown without a step number
-    title: "Welcome to <em>CocciCast</em>!",
+    title: "Welcome to <em>CocciCast</em>",
     body: "This is a quick 5-step tutorial of how to read and explore the forecast. Use Next, or click the highlighted controls yourself.",
     placement: "center",
   },
