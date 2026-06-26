@@ -583,14 +583,12 @@ function wireMapInteraction() {
       `<div class="popup-title">${name} County</div>` +
       `<div class="popup-row"><b>${cases == null ? "—" : fmtNum2(cases)}</b> forecasted cases</div>` +
       `<div class="popup-row"><b>${inc == null ? "—" : inc.toFixed(1)}</b> per 100k</div>`;
-    if (state.metric === "pctchange") {
-      const pct = countyPctChange(county, state.model);
-      const pctTxt =
-        pct == null
-          ? "—"
-          : `${pct > 0 ? "+" : pct < 0 ? "−" : ""}${Math.abs(pct).toFixed(1)}%`;
-      html += `<div class="popup-row"><b>${pctTxt}</b> vs. prior year</div>`;
-    }
+    const pct = countyPctChange(county, state.model);
+    const pctTxt =
+      pct == null
+        ? "—"
+        : `${pct > 0 ? "+" : pct < 0 ? "−" : ""}${Math.abs(pct).toFixed(1)}%`;
+    html += `<div class="popup-row"><b>${pctTxt}</b> vs. prior year</div>`;
     popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
   });
   map.on("mouseleave", "county-fill", () => {
