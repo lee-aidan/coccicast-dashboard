@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CocciCast — California Valley Fever Forecast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+    />
+    <link rel="stylesheet" href="./styles.css?v=56" />
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="masthead-inner">
+        <h1>CocciCast</h1>
+        <p class="kicker">A California Valley Fever Forecasting Tool</p>
+        <p class="last-updated">Last Updated: <span id="lastUpdated">—</span></p>
+        <button type="button" class="tour-btn" id="tourBtn">Tutorial</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <div class="controls-flip" id="leftFlip">
+        <div class="flip-inner" id="flipInner">
+          <aside class="panel controls flip-face flip-front">
+            <h2>MAP CONTROLS</h2>
+
+            <label class="ctl-label" for="metricSelect">Metric</label>
+            <select id="metricSelect">
+              <option value="cases">1-Year Forecasted Cases</option>
+              <option value="incidence">1-Year Forecasted Incidence per 100k</option>
+              <option value="pctchange">% Change from Previous Year</option>
+            </select>
+
+            <h2 class="section-gap">FORECAST CONTROLS</h2>
+
+            <label class="ctl-label" for="modelSelect">Model</label>
+            <select id="modelSelect"></select>
+
+            <h2 class="section-gap">OVERVIEW</h2>
+            <p class="help about-brief">Coccidioidomycosis (Valley Fever) is a fungal
+              infection caught by inhaling <em>Coccidioides</em> spores from disturbed
+              soil. Reported California cases have climbed to near-record highs.
+              Because outbreaks track hydroclimatic swings—wet winters that grow the
+              fungus, then hot, dry spells that loft its spores—we model incidence
+              from climate signals to forecast when and where risk peaks and guide
+              timely public health alerts. More information can be found
+              <a href="#" class="specs-link" id="specsLink" role="button">here</a>.</p>
+          </aside>
+
+          <section class="panel modelspecs flip-face flip-back" id="specsPanel"
+                   aria-hidden="true">
+            <button type="button" class="specs-close" id="specsClose"
+                    aria-label="Close about panel">×</button>
+            <h2>ABOUT <em>CocciCast</em></h2>
+            <div class="specs-prose">
+              <p class="specs-byline">By <a href="https://www.linkedin.com/in/simon-campo/" class="specs-link" target="_blank" rel="noopener">Simon Camponuri</a><br><span class="specs-byline-date">25 June 2026</span></p>
+              <p><em>CocciCast</em> forecasts coccidioidomycosis — Valley fever — an emerging
+                 infectious disease caused by inhaling spores of the soil-dwelling
+                 <em>Coccidioides</em> fungi. Reported incidence across California has
+                 risen dramatically since 2000, and in 2023 the state recorded a
+                 near-record 9,054 cases, surpassed only by the 9,093 reported in 2019.
+                 Across the April 2023–March 2024 transmission year, which captures the
+                 full seasonal rise and fall of the disease, California reported 10,519
+                 cases — 39% higher than the same period a year earlier. The forecasts
+                 shown throughout this dashboard are built on the ensemble model
+                 described by Camponuri, Heaney, and colleagues in <em>Emerging
+                 Infectious Diseases</em> (Vol. 31, No. 5, May 2025).</p>
+              <p>The model is grounded in a well-documented link between Valley fever
+                 and hydroclimatic swings. Incidence rises sharply when dry years give
+                 way to wet ones: soil moisture during wet winters is thought to
+                 support fungal growth and a buildup of spores, which are then lofted
+                 into the air during the hot, dry conditions of summer and early fall.
+                 Drought preceding the rainy season may further enhance growth by
+                 killing off competing soil microbes and by altering the rodent
+                 populations that serve as a putative reservoir and nutrient source for
+                 the fungus. California's severe 2020–2022 drought, followed by an
+                 exceptionally wet 2022–2023 winter — statewide precipitation exceeding
+                 150% of average, among the ten wettest seasons in a century — and a
+                 second wetter-than-average 2023–2024 season at 115% of the long-term
+                 average, set up conditions for continued high incidence through the
+                 2024 transmission year.</p>
+              <p>Forecasts come from an ensemble of five candidate algorithms — four
+                 generalized linear models with varying interactions and covariates,
+                 plus one random forest — each relating monthly reported cases per
+                 census tract to climatologic and environmental predictors. Using a
+                 progressive time-series cross-validation approach, each model's skill
+                 at predicting future out-of-sample cases was measured, and each was
+                 assigned an ensemble weight proportional to the inverse of its mean
+                 out-of-sample prediction error, so better-performing models contribute
+                 more to the blend. Separate models were fit for individual counties in
+                 highly endemic regions and for groupings of counties in low-to-
+                 moderately endemic regions, capturing spatial differences in how
+                 precipitation and temperature drive incidence. Eligible predictors
+                 included season, year, soil texture, elevation, percent impervious
+                 surface, lagged total monthly precipitation, and lagged mean
+                 temperature. Within the random forest, temperature carried high
+                 importance for forecasting cases in wetter coastal regions while
+                 precipitation dominated in the drier Central Valley — consistent with
+                 wet periods driving fungal growth and hot, dry periods driving spore
+                 dispersal.</p>
+              <p>To project forward, the models were fit to data spanning January
+                 2000–December 2022 and applied to observed temperature and
+                 precipitation through March 2024, with climate beyond the April 2024
+                 analysis date extrapolated from PRISM data: monthly temperatures
+                 following a 42-year (1981–2023) linear trend, and precipitation set to
+                 the 50th percentile of the 42-year distribution. Because future climate
+                 is unknown, forecasts were stress-tested against drier (20th
+                 percentile) and wetter (80th percentile) precipitation scenarios and
+                 warmer (+3°F) and cooler (−3°F) temperature scenarios; results were
+                 similar across all of them, indicating that prior climate conditions
+                 matter more than concurrent weather. Monthly ensemble forecasts were
+                 formed as the weighted average of the component models, and 90%
+                 prediction intervals were generated through a two-step bootstrapping
+                 procedure. All analyses were conducted in R.</p>
+              <p>Applied retrospectively, the ensemble predicted 11,846 cases (90% PI
+                 11,261–12,505) statewide during April 2023–March 2024, closely tracking
+                 the preliminary state report of 10,519 and reproducing the observed
+                 monthly peak of roughly 1,462 cases; the fit to historical case data
+                 was strong (R² = 0.87). Looking ahead, the model forecast 12,244 cases
+                 (90% PI 11,579–12,964) statewide during April 2024–March 2025 — a 62%
+                 increase over the transmission year two years earlier and on par with
+                 the high incidence of 2023.</p>
+              <p>The heaviest burden is concentrated in a handful of regions. For the
+                 2024–2025 transmission year, the Southern San Joaquin Valley was
+                 projected to see the most infections (5,399 cases; 90% PI 4,993–5,902),
+                 followed by the Southern Coast (3,322; 90% PI 3,172–3,494) and the
+                 Central Coast (1,207; 90% PI 1,071–1,378), with smaller totals across
+                 the Bay Area, Northern San Joaquin Valley, Southern Inland, and other
+                 regions. The forecast shows pronounced seasonality: incidence begins
+                 climbing in June and peaks in November at about 1,411 cases statewide
+                 (90% PI 1,267–1,587) — 98% higher than the 2022 peak of 714 and nearly
+                 matching the 2023 peak.</p>
+              <p>Because reported cases typically lag exposure by one to two months, the
+                 November peak reflects exposures during the dry late-summer and fall,
+                 when drier soils generate more dust and airborne spores — though risk
+                 persists year-round. Climate change is reshaping California's
+                 hydroclimate: while average precipitation may change only modestly, its
+                 variability is expected to grow, producing larger and more frequent
+                 swings between very wet and very dry conditions — "precipitation
+                 whiplash" — exactly the pattern associated with Valley fever surges.
+                 The forecasts carry important caveats: case data are aggregated to
+                 disease onset (which lags exposure) and to census tract of residence
+                 (which may differ from where exposure occurred), future climate is
+                 inherently uncertain, and the model cannot anticipate stochastic
+                 point-source outbreaks.</p>
+              <p class="specs-cite">Source: Camponuri SK, Heaney AK, Sondermeyer Cooksey
+                 G, Vugia DJ, Jain S, Swain DL, Balmes J, Remais JV, Head JR. Recent and
+                 Forecasted Increases in Coccidioidomycosis Incidence Linked to
+                 Hydroclimatic Swings, California, USA.
+                 <a href="https://doi.org/10.3201/eid3105.241338" target="_blank"
+                    rel="noopener">Emerg Infect Dis. 2025;31(5):1028–1032</a>.
+                 Originally posted as a medRxiv preprint (2024.08.30.24312858).</p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="panel map-panel">
+        <div id="map" role="img" aria-label="Interactive California county forecast map">
+          <div class="map-legend" id="mapLegend">
+            <h3 id="legendTitle">Legend</h3>
+            <ul id="legendList"></ul>
+          </div>
+          <button type="button" class="map-back" id="mapBack" aria-label="Back to statewide view">
+            <span class="map-back-ico" aria-hidden="true">←</span>
+            <span>California</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel summary">
+        <h2 id="summaryTitle">STATEWIDE SUMMARY</h2>
+        <div class="chart-head">
+          <h3 class="chart-title" id="chartTitle">Observed vs. Forecasted Cases</h3>
+          <label class="range-ctl" for="rangeSelect">
+            <span>Span</span>
+            <select id="rangeSelect">
+              <option value="1">1 year</option>
+              <option value="2" selected>2 years</option>
+              <option value="5">5 years</option>
+              <option value="10">10 years</option>
+            </select>
+          </label>
+        </div>
+        <p class="chart-legend">
+          <span class="leg-seg">
+            <span class="key key-obs"></span> <span id="legObsLabel">Observed</span>
+          </span>
+          <span class="leg-seg" id="legPred">
+            <span class="key key-pred"></span> <span id="legendForecastLabel">Ensemble Forecast</span>
+          </span>
+          <span class="leg-seg" id="legBand">
+            <span class="key key-band"></span> 95% Range
+          </span>
+        </p>
+        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+
+        <div class="stat-grid">
+          <article>
+            <p id="casesLabel">Predicted Cases</p>
+            <strong id="casesStat">—</strong>
+            <span id="casesSub" class="stat-sub">forecast year</span>
+          </article>
+          <article>
+            <p id="incidenceLabel">Avg. incidence</p>
+            <strong id="incidenceStat">—</strong>
+            <span class="stat-sub">per 100k</span>
+          </article>
+          <article>
+            <p id="highRiskLabel">Elevated counties</p>
+            <strong id="highRiskStat">—</strong>
+            <span id="highRiskSub" class="stat-sub">rising vs. prior year</span>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <p>
+        This <em>CocciCast</em> dashboard was developed by <a href="https://lee-aidan.github.io/aidan-lee-website/" class="specs-link" target="_blank" rel="noopener">Aidan Lee</a>.
+      </p>
+    </footer>
+
+    <!-- guided onboarding tour: dim spotlight + step card (built/positioned in JS) -->
+    <div id="tour" class="tour" hidden>
+      <div class="tour-spotlight" id="tourSpotlight"></div>
+      <div class="tour-card" id="tourCard" role="dialog" aria-modal="true"
+           aria-labelledby="tourTitle">
+        <p class="tour-step" id="tourStep"></p>
+        <h3 class="tour-title" id="tourTitle"></h3>
+        <p class="tour-body" id="tourBody"></p>
+        <div class="tour-actions">
+          <button type="button" class="tour-skip" id="tourSkip">Skip</button>
+          <div class="tour-nav">
+            <button type="button" class="tour-back" id="tourBack">Back</button>
+            <button type="button" class="tour-next" id="tourNext">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="./app.js?v=59"></script>
+  </body>
+</html>

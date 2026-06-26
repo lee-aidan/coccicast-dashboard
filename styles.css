@@ -1,0 +1,500 @@
+:root {
+  --brand-blue: #15457a;
+  --brand-blue-dark: #0f3a66;
+  --accent: #c8102e;
+  --ink: #1b2733;
+  --muted: #5a6776;
+  --line: #d7dee6;
+  --bg: #eef2f6;
+  --card: #ffffff;
+
+  /* sequential choropleth ramp (low -> high) + no-data */
+  --q0: #dbeaf5;
+  --q1: #a8cce8;
+  --q2: #6ba6d6;
+  --q3: #357fb8;
+  --q4: #134e80;
+  --qna: #eceff2;
+
+  --radius: 8px;
+  --font: "Public Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+
+  --col-left: 245px; /* width of the left controls column */
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+h1, h2, h3 { font-weight: 600; margin: 0; }
+
+/* ---------- masthead ---------- */
+.masthead {
+  background: var(--brand-blue);
+  color: #fff;
+  padding: 38px 0 28px;
+}
+.masthead-inner { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.masthead h1 { font-size: 2.7rem; letter-spacing: -0.01em; line-height: 1.05; }
+.kicker {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #b9d0ea;
+  font-weight: 600;
+}
+.last-updated {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: #c4d6ea;
+}
+
+/* ---------- layout ---------- */
+.layout {
+  max-width: 1240px;
+  margin: 22px auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: var(--col-left) minmax(0, 1fr) 458px;
+  gap: 9px;
+  align-items: stretch;
+  position: relative; /* anchor for the expanding model-specs panel */
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.panel h2 {
+  font-size: 1.02rem;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--brand-blue);
+}
+.panel h2.section-gap { margin-top: 26px; }
+
+/* ---------- controls ---------- */
+.ctl-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 14px 0 6px;
+}
+.controls select {
+  width: 100%;
+  padding: 9px 10px;
+  font-family: inherit;
+  font-size: 0.79rem;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+}
+.help { font-size: 0.8rem; color: var(--muted); margin: 7px 0 0; }
+.specs-link { color: var(--brand-blue); font-weight: 600; text-decoration: underline; cursor: pointer; }
+.specs-link:hover { color: var(--accent); }
+.specs-byline { margin: -6px 0 14px; font-size: 0.68rem; font-weight: 700; color: var(--ink); line-height: 0.8; }
+.specs-byline-date { display: inline-block; margin-top: -5px; font-size: 0.68rem; font-weight: 400; color: var(--ink); }
+
+/* ---------- left panel: flip to model specs, then expand ---------- */
+/* the grid cell holds the column space; the flip card is an absolute overlay
+   inside it so the map + summary never reflow when it expands over them */
+.controls-flip {
+  position: relative;
+  perspective: 1600px;
+  min-height: 340px;
+}
+.flip-inner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease, right 0.75s ease;
+}
+/* stay lifted above the map for the whole open→close cycle so the panel never
+   slips under the map while it is retracting */
+.controls-flip.is-active { z-index: 20; }
+/* step 1: spin 180° to the model-specs face */
+.controls-flip.is-flipped .flip-inner { transform: rotateY(180deg); }
+/* step 2: widen rightward to cover the map + summary (right goes negative) */
+.controls-flip.is-expanded .flip-inner { right: var(--expand-right, 0); }
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  /* clipped during the flip/expand so no scrollbar flashes mid-animation, and
+     never any horizontal scroll */
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back { transform: rotateY(180deg); }
+/* once fully open, allow vertical scrolling only (x stays hidden) */
+.controls-flip.is-revealed .flip-back { overflow-y: auto; }
+
+/* keep the specs content (everything but the title) hidden through the flip +
+   expand, then ease it in moving slightly upward (mirrors how the chart eases in
+   on load). The MODEL SPECS title is always present once the face is showing. */
+.modelspecs > *:not(h2) {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.controls-flip.is-revealed .modelspecs > *:not(h2) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* model-specs back face */
+.modelspecs > h2 {
+  /* keep the underline the same length as the MAP CONTROLS underline even
+     after the panel widens */
+  width: calc(var(--col-left) - 36px);
+}
+.specs-prose {
+  margin-top: 16px;
+}
+.specs-prose p {
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.specs-prose p:last-child { margin-bottom: 0; }
+.specs-prose a { color: var(--brand-blue); text-decoration: underline; }
+.specs-prose a:hover { color: var(--accent); }
+.specs-cite { font-size: 0.8rem; color: var(--muted); }
+.specs-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  font-size: 0; /* hide the text glyph; the × is drawn below so it centers exactly */
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+/* draw the × as two crossed lines pinned to the button's exact center */
+.specs-close::before,
+.specs-close::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 13px;
+  height: 1.6px;
+  background: var(--muted);
+  border-radius: 1px;
+  transition: background 0.15s ease;
+}
+.specs-close::before { transform: translate(-50%, -50%) rotate(45deg); }
+.specs-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.specs-close:hover { background: var(--bg); box-shadow: 0 1px 5px rgba(0,0,0,0.18); }
+.specs-close:hover::before,
+.specs-close:hover::after { background: var(--ink); }
+
+/* ---------- map legend overlay (top-right of map) ---------- */
+.map-legend {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 4px;
+  padding: 10px 12px;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+/* hidden while drilled into a county, freeing the top-right corner */
+.map-legend.is-hidden { opacity: 0; }
+.map-legend h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 7px; }
+.map-legend ul { list-style: none; margin: 0; padding: 0; }
+.map-legend li { display: flex; align-items: center; gap: 8px; font-size: 0.79rem; margin: 4px 0; color: var(--muted); }
+.map-legend .swatch { width: 14px; height: 14px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.15); flex: none; }
+/* continuous diverging gradient legend (% change metric) */
+.map-legend .legend-gradient { display: flex; align-items: stretch; gap: 8px; height: 112px; margin: 2px 0 0; }
+.map-legend .gradient-bar { width: 14px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.15); flex: none; }
+.map-legend .gradient-labels { display: flex; flex-direction: column; justify-content: space-between; font-size: 0.79rem; color: var(--muted); }
+
+/* on-map "back to statewide" pill — shown only while drilled into a county.
+   sits top-right, in the space the legend vacates during county view. */
+.map-back {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px 7px 11px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.18);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--brand-blue);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease,
+    background 0.15s ease, box-shadow 0.15s ease;
+}
+.map-back.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.map-back:hover { background: var(--bg); box-shadow: 0 2px 8px rgba(0,0,0,0.22); }
+.map-back:active { transform: translateY(1px); }
+.map-back-ico {
+  font-size: 1.15rem;
+  line-height: 1;
+  margin-top: -1px;
+  font-weight: 700;
+  -webkit-text-stroke: 0.9px currentColor;
+}
+
+.notes { margin-top: 22px; font-size: 0.84rem; }
+.notes summary { cursor: pointer; font-weight: 600; color: var(--brand-blue); }
+.notes p { color: var(--muted); }
+
+/* ---------- map ---------- */
+.map-panel { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.panel-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--line); flex: none; }
+.panel-head h2 { border: 0; padding: 0; margin: 0; font-size: 1.02rem; }
+.head-note { margin: 4px 0 0; font-size: 0.82rem; color: var(--muted); }
+#map { flex: 1; min-height: 400px; width: 100%; position: relative; }
+.state-label {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  text-shadow: 0 0 4px #fff, 0 0 4px #fff, 0 0 4px #fff;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* smaller zoom controls, top-left */
+.maplibregl-ctrl-top-left .maplibregl-ctrl-group {
+  transform: scale(0.82);
+  transform-origin: top left;
+  margin: 8px 0 0 8px;
+}
+.maplibregl-ctrl-top-left .maplibregl-ctrl-group .maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2315457a'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z'/%3E%3C/svg%3E");
+}
+.maplibregl-ctrl-top-left .maplibregl-ctrl-group .maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2315457a'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-9z'/%3E%3C/svg%3E");
+}
+
+/* map credit: bottom-left, small grey */
+.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib {
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 10px;
+  color: #7a8794;
+  padding: 2px 6px;
+  border-radius: 0 4px 0 0;
+}
+.maplibregl-ctrl-attrib a { color: #7a8794; }
+
+/* scale bar outer wrapper: round the top-left corner to mirror attribution */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl {
+  border-radius: 4px 0 0 0;
+  overflow: hidden;
+}
+/* ruler itself: straight vertical caps on both sides, no rounding */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-scale {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: #7a8794;
+  border-radius: 0;
+  font-size: 10px;
+  color: #7a8794;
+}
+
+.maplibregl-popup-content {
+  font-family: var(--font);
+  font-size: 0.84rem;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.86);
+}
+.popup-title { font-weight: 700; margin-bottom: 4px; color: var(--brand-blue-dark); }
+/* pinned popup shows only the county name, so drop the row gap below it */
+.popup-pinned .maplibregl-popup-content { background: rgba(255,255,255,0.92); }
+.popup-pinned-title { margin-bottom: 0; }
+/* keep the pinned popup above the map legend when a county's centroid lands
+   near the top-right (e.g. Los Angeles) */
+.maplibregl-popup.popup-pinned { z-index: 3; }
+.popup-row { color: var(--ink); }
+.popup-row b { font-weight: 600; }
+
+/* ---------- summary ---------- */
+.stat-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 28px; }
+.stat-grid article {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand-blue);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+.stat-grid p { margin: 0; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.stat-grid strong { display: block; font-size: 1.3rem; line-height: 1.2; margin-top: 2px; }
+.stat-sub { font-size: 0.74rem; color: var(--muted); }
+
+/* match the "Metric"/"Model" control-label type and the 14px gap the h2 border
+   leaves above those labels */
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 14px 0 8px;
+}
+.chart-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0;
+}
+.range-ctl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  flex: none;
+}
+.range-ctl select {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  padding: 3px 22px 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+.chart-wrap { height: 190px; }
+.chart-legend { font-size: 0.72rem; color: var(--muted); margin: 4px 0 10px; display: flex; flex-wrap: nowrap; white-space: nowrap; gap: 8px; align-items: center; justify-content: center; }
+.leg-seg { display: inline-flex; align-items: center; gap: 5px; }
+.key { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 2px; }
+.key-obs { background: #1b2733; height: 2px; border-radius: 0; }
+.key-pred { background: repeating-linear-gradient(to right, #c8102e 0 4px, transparent 4px 7px); height: 2px; border-radius: 0; }
+.key-band { background: #aac4e0; height: 10px; border-radius: 2px; }
+
+/* ---------- footer ---------- */
+.site-foot { max-width: 1240px; margin: 8px auto 40px; padding: 0 24px; }
+.site-foot p { font-size: 0.78rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+
+/* ---------- onboarding tour ---------- */
+/* masthead "take a tour" pill, top-right of the header band */
+.masthead-inner { position: relative; }
+.tour-btn {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.tour-btn:hover { background: rgba(255, 255, 255, 0.22); border-color: rgba(255, 255, 255, 0.7); }
+
+.tour[hidden] { display: none; }
+/* the lit cutout: a transparent box whose massive box-shadow dims everything
+   else. pointer-events:none so the highlighted feature stays fully interactive. */
+.tour-spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(13, 22, 33, 0.62);
+  pointer-events: none;
+  z-index: 9998;
+  transition: top 0.28s ease, left 0.28s ease, width 0.28s ease, height 0.28s ease;
+}
+.tour-card {
+  position: fixed;
+  z-index: 9999;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+  pointer-events: auto;
+}
+/* welcome card eases in like the chart line draws on first paint */
+@keyframes tourCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.tour-card.is-welcome { animation: tourCardIn 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.tour-step {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-blue);
+}
+.tour-title { margin: 0 0 6px; font-size: 1.05rem; color: var(--ink); }
+.tour-body { margin: 0 0 16px; font-size: 0.88rem; line-height: 1.5; color: var(--muted); }
+.tour-actions { display: flex; align-items: center; justify-content: space-between; }
+.tour-nav { display: inline-flex; gap: 8px; }
+.tour-actions button {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 7px;
+  cursor: pointer;
+  padding: 7px 14px;
+}
+.tour-skip { border: 0; background: none; color: var(--muted); padding: 7px 4px; }
+.tour-skip:hover { color: var(--ink); }
+.tour-back { border: 1px solid var(--line); background: #fff; color: var(--ink); }
+.tour-back:hover { background: var(--bg); }
+.tour-back:disabled { opacity: 0.4; cursor: default; }
+.tour-next { border: 1px solid var(--brand-blue); background: var(--brand-blue); color: #fff; }
+.tour-next:hover { background: var(--brand-blue-dark); border-color: var(--brand-blue-dark); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px) {
+  .layout { grid-template-columns: 1fr; }
+  #map { height: 440px; }
+}
