@@ -219,7 +219,7 @@ sup .ref-link:hover,
   border-radius: 8px;
 }
 
-.specs-list-lead { margin-bottom: 6px !important; font-weight: 600; }
+.specs-list-lead { margin-bottom: 6px !important; padding-left: 20px; font-weight: 600; }
 .specs-models,
 .specs-refs {
   margin: 0 0 14px;
@@ -229,7 +229,7 @@ sup .ref-link:hover,
   color: var(--ink);
 }
 /* indent the model list so its numbers sit in from the body text */
-.specs-models { padding-left: 40px; }
+.specs-models { padding-left: 44px; }
 .specs-models li { margin-bottom: 6px; }
 .specs-refs {
   font-size: 0.82rem;
