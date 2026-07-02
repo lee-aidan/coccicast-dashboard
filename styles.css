@@ -145,7 +145,7 @@ h1, h2, h3 { font-weight: 600; margin: 0; }
 }
 .flip-back { transform: rotateY(180deg); }
 /* once fully open, allow vertical scrolling only (x stays hidden) */
-.controls-flip.is-revealed .flip-back { overflow-y: auto; }
+.controls-flip.is-revealed .flip-back { overflow-y: auto; scroll-behavior: smooth; }
 
 /* keep the specs content (everything but the title) hidden through the flip +
    expand, then ease it in moving slightly upward (mirrors how the chart eases in
@@ -179,6 +179,60 @@ h1, h2, h3 { font-weight: 600; margin: 0; }
 .specs-prose a { color: var(--brand-blue); text-decoration: underline; }
 .specs-prose a:hover { color: var(--accent); }
 .specs-cite { font-size: 0.8rem; color: var(--muted); }
+
+/* section sub-headings within the about panel */
+.specs-subhead {
+  margin: 26px 0 10px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--ink);
+  scroll-margin-top: 16px;
+}
+.specs-subhead:first-child { margin-top: 0; }
+
+/* superscript / inline reference links jump to the References list */
+sup .ref-link,
+.ref-link {
+  color: var(--brand-blue);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+sup .ref-link:hover,
+.ref-link:hover { color: var(--accent); text-decoration: underline; }
+
+/* lifecycle figure: centered, responsive, crisp */
+.specs-figure {
+  margin: 18px 0 20px;
+  text-align: center;
+}
+.specs-figure img {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.specs-list-lead { margin-bottom: 6px !important; font-weight: 600; }
+.specs-models,
+.specs-refs {
+  margin: 0 0 14px;
+  padding-left: 22px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.specs-models li { margin-bottom: 6px; }
+.specs-refs {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.specs-refs li { margin-bottom: 10px; scroll-margin-top: 16px; }
+.specs-refs li:last-child { margin-bottom: 0; }
+/* briefly highlight a reference when jumped to */
+.specs-refs li:target { background: rgba(21, 69, 122, 0.09); border-radius: 4px; }
 .specs-close {
   position: absolute;
   top: 14px;

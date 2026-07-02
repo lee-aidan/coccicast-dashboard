@@ -14,7 +14,7 @@
       rel="stylesheet"
       href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
     />
-    <link rel="stylesheet" href="./styles.css?v=56" />
+    <link rel="stylesheet" href="./styles.css?v=57" />
   </head>
   <body>
     <header class="masthead">
@@ -61,103 +61,137 @@
                     aria-label="Close about panel">×</button>
             <h2>ABOUT <em>CocciCast</em></h2>
             <div class="specs-prose">
-              <p class="specs-byline">By <a href="https://www.linkedin.com/in/simon-campo/" class="specs-link" target="_blank" rel="noopener">Simon Camponuri</a><br><span class="specs-byline-date">25 June 2026</span></p>
-              <p><em>CocciCast</em> forecasts coccidioidomycosis — Valley fever — an emerging
-                 infectious disease caused by inhaling spores of the soil-dwelling
-                 <em>Coccidioides</em> fungi. Reported incidence across California has
-                 risen dramatically since 2000, and in 2023 the state recorded a
-                 near-record 9,054 cases, surpassed only by the 9,093 reported in 2019.
-                 Across the April 2023–March 2024 transmission year, which captures the
-                 full seasonal rise and fall of the disease, California reported 10,519
-                 cases — 39% higher than the same period a year earlier. The forecasts
-                 shown throughout this dashboard are built on the ensemble model
-                 described by Camponuri, Heaney, and colleagues in <em>Emerging
-                 Infectious Diseases</em> (Vol. 31, No. 5, May 2025).</p>
-              <p>The model is grounded in a well-documented link between Valley fever
-                 and hydroclimatic swings. Incidence rises sharply when dry years give
-                 way to wet ones: soil moisture during wet winters is thought to
-                 support fungal growth and a buildup of spores, which are then lofted
-                 into the air during the hot, dry conditions of summer and early fall.
-                 Drought preceding the rainy season may further enhance growth by
-                 killing off competing soil microbes and by altering the rodent
-                 populations that serve as a putative reservoir and nutrient source for
-                 the fungus. California's severe 2020–2022 drought, followed by an
-                 exceptionally wet 2022–2023 winter — statewide precipitation exceeding
-                 150% of average, among the ten wettest seasons in a century — and a
-                 second wetter-than-average 2023–2024 season at 115% of the long-term
-                 average, set up conditions for continued high incidence through the
-                 2024 transmission year.</p>
-              <p>Forecasts come from an ensemble of five candidate algorithms — four
-                 generalized linear models with varying interactions and covariates,
-                 plus one random forest — each relating monthly reported cases per
-                 census tract to climatologic and environmental predictors. Using a
-                 progressive time-series cross-validation approach, each model's skill
-                 at predicting future out-of-sample cases was measured, and each was
-                 assigned an ensemble weight proportional to the inverse of its mean
-                 out-of-sample prediction error, so better-performing models contribute
-                 more to the blend. Separate models were fit for individual counties in
-                 highly endemic regions and for groupings of counties in low-to-
-                 moderately endemic regions, capturing spatial differences in how
-                 precipitation and temperature drive incidence. Eligible predictors
+              <p class="specs-byline">By <a href="https://www.linkedin.com/in/simon-campo/" class="specs-link" target="_blank" rel="noopener">Simon Camponuri</a><br><span class="specs-byline-date">1 July 2026</span></p>
+              <h3 class="specs-subhead">What is <em>CocciCast</em>?</h3>
+              <p>Coccidioidomycosis, commonly known as Valley fever or “cocci,” is an
+                 emerging fungal disease caused by inhaling airborne spores of
+                 <em>Coccidioides</em>, a soil-dwelling fungus found in parts of the
+                 western United States. Infection most often causes a respiratory
+                 illness, but symptoms can persist for months and, in some cases, lead
+                 to severe or disseminated disease.</p>
+              <p>Valley fever has increased substantially in California over the past two
+                 decades, with recent growth extending beyond historically high-incidence
+                 areas in the southern San Joaquin Valley.<sup><a class="ref-link" href="#ref1">[1]</a></sup>
+                 A growing body of evidence suggests that climate variability plays an
+                 important role in Valley fever epidemiology. Wet winter seasons and hot,
+                 dry summers have been found to increase incidence in the fall, likely
+                 because moisture promotes fungal growth during the winter and soil
+                 drying during the summer facilitates dust generation and spore
+                 dispersal, leading to subsequent infections.<sup><a class="ref-link" href="#ref2">[2]</a></sup>
+                 Inter-annual fluctuations in drought conditions have also been linked to
+                 Valley fever incidence, with drought conditions suppressing concurrent
+                 incidence but exacerbating it once the rains return, possibly due to
+                 impacts on <em>Coccidioides</em> soil competitors or rodent host
+                 populations.<sup><a class="ref-link" href="#ref2">[2]</a></sup></p>
+              <figure class="specs-figure">
+                <picture>
+                  <source srcset="./assets/cocci-lifecycle.webp" type="image/webp" />
+                  <img src="./assets/cocci-lifecycle.png" width="1500" height="785"
+                       loading="lazy" decoding="async"
+                       alt="Climate-sensitive Coccidioides lifecycle: during the rainy
+                            winter and spring seasons the fungus grows as mycelia in the
+                            soil; during the dry summer and fall the mycelia fragment and
+                            release arthroconidia (spores) that disperse in dust and are
+                            inhaled, causing human exposure." />
+                </picture>
+              </figure>
+              <p>In partnership with the California Department of Public Health, our team
+                 developed this ensemble forecasting model to translate these
+                 climate-disease relationships into actionable
+                 information.<sup><a class="ref-link" href="#ref3">[3]</a></sup> By
+                 combining reported Valley fever cases with climate data, the model
+                 estimates when and where incidence is likely to rise in California in
+                 the coming 12 months. Our hope is that these forecasts can help public
+                 health agencies, clinicians, and communities anticipate periods of
+                 elevated risk, strengthen public messaging, and support earlier
+                 diagnosis of Valley fever among patients.</p>
+              <p>For more information on the relationship between climate and Valley
+                 fever, see <a class="ref-link" href="#ref2">Head et al. 2022</a> and
+                 <a class="ref-link" href="#ref3">Camponuri et al. 2025</a>.</p>
+
+              <h3 class="specs-subhead">About the forecast</h3>
+              <p>To develop a predictive algorithm for generating short-term Valley fever
+                 forecasts, we used an ensemble modeling approach published
+                 here<sup><a class="ref-link" href="#ref2">[2]</a></sup> and
+                 here<sup><a class="ref-link" href="#ref3">[3]</a></sup>. We generated
+                 five candidate prediction algorithms with increasing levels of
+                 complexity: four generalized linear models with varying interactions and
+                 covariates, and one random forest model (see below). Eligible predictors
                  included season, year, soil texture, elevation, percent impervious
-                 surface, lagged total monthly precipitation, and lagged mean
-                 temperature. Within the random forest, temperature carried high
-                 importance for forecasting cases in wetter coastal regions while
-                 precipitation dominated in the drier Central Valley — consistent with
-                 wet periods driving fungal growth and hot, dry periods driving spore
-                 dispersal.</p>
-              <p>To project forward, the models were fit to data spanning January
-                 2000–December 2022 and applied to observed temperature and
-                 precipitation through March 2024, with climate beyond the April 2024
-                 analysis date extrapolated from PRISM data: monthly temperatures
-                 following a 42-year (1981–2023) linear trend, and precipitation set to
-                 the 50th percentile of the 42-year distribution. Because future climate
-                 is unknown, forecasts were stress-tested against drier (20th
-                 percentile) and wetter (80th percentile) precipitation scenarios and
-                 warmer (+3°F) and cooler (−3°F) temperature scenarios; results were
-                 similar across all of them, indicating that prior climate conditions
-                 matter more than concurrent weather. Monthly ensemble forecasts were
-                 formed as the weighted average of the component models, and 90%
-                 prediction intervals were generated through a two-step bootstrapping
-                 procedure. All analyses were conducted in R.</p>
-              <p>Applied retrospectively, the ensemble predicted 11,846 cases (90% PI
-                 11,261–12,505) statewide during April 2023–March 2024, closely tracking
-                 the preliminary state report of 10,519 and reproducing the observed
-                 monthly peak of roughly 1,462 cases; the fit to historical case data
-                 was strong (R² = 0.87). Looking ahead, the model forecast 12,244 cases
-                 (90% PI 11,579–12,964) statewide during April 2024–March 2025 — a 62%
-                 increase over the transmission year two years earlier and on par with
-                 the high incidence of 2023.</p>
-              <p>The heaviest burden is concentrated in a handful of regions. For the
-                 2024–2025 transmission year, the Southern San Joaquin Valley was
-                 projected to see the most infections (5,399 cases; 90% PI 4,993–5,902),
-                 followed by the Southern Coast (3,322; 90% PI 3,172–3,494) and the
-                 Central Coast (1,207; 90% PI 1,071–1,378), with smaller totals across
-                 the Bay Area, Northern San Joaquin Valley, Southern Inland, and other
-                 regions. The forecast shows pronounced seasonality: incidence begins
-                 climbing in June and peaks in November at about 1,411 cases statewide
-                 (90% PI 1,267–1,587) — 98% higher than the 2022 peak of 714 and nearly
-                 matching the 2023 peak.</p>
-              <p>Because reported cases typically lag exposure by one to two months, the
-                 November peak reflects exposures during the dry late-summer and fall,
-                 when drier soils generate more dust and airborne spores — though risk
-                 persists year-round. Climate change is reshaping California's
-                 hydroclimate: while average precipitation may change only modestly, its
-                 variability is expected to grow, producing larger and more frequent
-                 swings between very wet and very dry conditions — "precipitation
-                 whiplash" — exactly the pattern associated with Valley fever surges.
-                 The forecasts carry important caveats: case data are aggregated to
-                 disease onset (which lags exposure) and to census tract of residence
-                 (which may differ from where exposure occurred), future climate is
-                 inherently uncertain, and the model cannot anticipate stochastic
-                 point-source outbreaks.</p>
-              <p class="specs-cite">Source: Camponuri SK, Heaney AK, Sondermeyer Cooksey
-                 G, Vugia DJ, Jain S, Swain DL, Balmes J, Remais JV, Head JR. Recent and
-                 Forecasted Increases in Coccidioidomycosis Incidence Linked to
-                 Hydroclimatic Swings, California, USA.
-                 <a href="https://doi.org/10.3201/eid3105.241338" target="_blank"
-                    rel="noopener">Emerg Infect Dis. 2025;31(5):1028–1032</a>.
-                 Originally posted as a medRxiv preprint (2024.08.30.24312858).</p>
+                 surface, 36-month lagged total monthly precipitation, and 36-month
+                 lagged mean temperature. We then examined how each candidate algorithm
+                 performed when used to generate out-of-sample predictions by using a
+                 12-fold progressive time-series cross validation approach to determine
+                 the out-of-sample future prediction error of each model, examining model
+                 performance in the 12 months after the training data. Ensemble forecasts
+                 were weighted averages of individual model forecasts, with weights
+                 proportional to the inverse of their out-of-sample prediction error. We
+                 fit separate ensemble models for each county (for highly endemic
+                 regions) or region (for low to moderately endemic regions) in California
+                 relating monthly reported cases per census tract to climatological or
+                 environmental predictors.</p>
+              <p class="specs-list-lead">Models:</p>
+              <ol class="specs-models">
+                <li>Long-term and seasonal trends only.</li>
+                <li>Long-term and seasonal trends, plus environmental variables (soil
+                    type, impervious surface, elevation) and lagged temperature and
+                    precipitation.</li>
+                <li>Long-term and seasonal trends, environmental variables (soil type,
+                    impervious surface, elevation), lagged temperature and precipitation,
+                    and interactions between post-drought indicators and lagged
+                    temperature and precipitation.</li>
+                <li>Long-term and seasonal trends, environmental variables (soil type,
+                    impervious surface, elevation), lagged temperature and precipitation,
+                    interactions between season and post-drought indicators, and
+                    interactions between season and lagged temperature and
+                    precipitation.</li>
+                <li>Random forest model with season, environmental variables (soil type,
+                    impervious surface, elevation), lagged temperature and precipitation,
+                    and post-drought indicators.</li>
+              </ol>
+              <p>To forecast Valley fever cases, we applied each model to temperature and
+                 precipitation data during the observed period, and extrapolated
+                 temperature and precipitation data 12 months into the future. Future
+                 temperature estimates beyond the observed period were generated by
+                 extrapolating historical monthly temperature averages in each census
+                 tract using a linear trend from 1981–present. Future precipitation
+                 estimates were generated by setting precipitation in each census tract
+                 to the observed values during the 50th percentile of the annual
+                 cumulative precipitation distribution (from 1981–present).</p>
+              <p>To quantify uncertainty in our forecasts, we generated 50% and 90%
+                 empirical prediction intervals. In brief, we first used a
+                 leave-future-year cross-validation procedure to generate a distribution
+                 of out-of-sample forecast residuals, calculated as the difference
+                 between the observed and predicted number of cases. We then used the
+                 empirical quantiles of these residuals to calibrate prediction intervals
+                 around each forecast: the 25th and 75th percentiles of the residual
+                 distribution were added to forecasts to construct the 50% prediction
+                 interval, and the 5th and 95th percentiles were used to construct the
+                 90% prediction interval. Lower bounds below zero were truncated at zero.
+                 This approach produces asymmetric, calibrated intervals that reflect the
+                 model’s historical out-of-sample forecast performance, without assuming
+                 a symmetric or normally distributed error structure.</p>
+
+              <h3 class="specs-subhead" id="references">References</h3>
+              <ol class="specs-refs">
+                <li id="ref1">Sondermeyer Cooksey GL, Nguyen A, Vugia D, Jain S. Regional
+                    Analysis of Coccidioidomycosis Incidence — California, 2000–2018.
+                    <em>Morbidity and Mortality Weekly Report</em> 2020;69(48):1817–21.
+                    <a href="https://doi.org/10.15585/mmwr.mm6948a4" target="_blank"
+                       rel="noopener">doi:10.15585/mmwr.mm6948a4</a></li>
+                <li id="ref2">Head JR, Sondermeyer-Cooksey G, Heaney AK, et al. Effects of
+                    precipitation, heat, and drought on incidence and expansion of
+                    coccidioidomycosis in western USA: a longitudinal surveillance study.
+                    <em>The Lancet Planetary Health</em> 2022;6(10):e793–e803.
+                    <a href="https://doi.org/10.1016/S2542-5196(22)00202-9" target="_blank"
+                       rel="noopener">doi:10.1016/S2542-5196(22)00202-9</a></li>
+                <li id="ref3">Camponuri SK, Heaney AK, Cooksey GS, et al. Recent and
+                    Forecasted Increases in Coccidioidomycosis Incidence Linked to
+                    Hydroclimatic Swings, California, USA. <em>Emerg Infect Dis</em>
+                    2025;31(5):1028–32.
+                    <a href="https://doi.org/10.3201/eid3105.241338" target="_blank"
+                       rel="noopener">doi:10.3201/eid3105.241338</a></li>
+              </ol>
             </div>
           </section>
         </div>
