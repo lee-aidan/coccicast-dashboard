@@ -110,6 +110,7 @@ const el = {
   mapBack: document.getElementById("mapBack"),
   specsLink: document.getElementById("specsLink"),
   specsClose: document.getElementById("specsClose"),
+  specsPanel: document.getElementById("specsPanel"),
   leftFlip: document.getElementById("leftFlip"),
   flipInner: document.getElementById("flipInner"),
   summaryPanel: document.querySelector(".summary"),
@@ -220,6 +221,27 @@ function bindControls() {
   });
   el.specsClose.addEventListener("click", closeSpecs);
 
+  // reference jump highlight: flash the target <li>, then clear it once the user
+  // scrolls it out of view or leaves the about panel (see clearRefFlash)
+  const specsScroll = el.specsPanel.closest(".flip-back") || el.specsPanel;
+  el.specsPanel.addEventListener("click", (e) => {
+    const link = e.target.closest(".ref-link");
+    if (!link) return;
+    const id = link.getAttribute("href").slice(1);
+    const li = document.getElementById(id);
+    if (!li) return;
+    clearRefFlash();
+    li.classList.add("ref-flash");
+    flashedRef = li;
+  });
+  specsScroll.addEventListener("scroll", () => {
+    if (!flashedRef) return;
+    const cr = specsScroll.getBoundingClientRect();
+    const rr = flashedRef.getBoundingClientRect();
+    // cleared once the highlighted reference is no longer within the viewport
+    if (rr.bottom <= cr.top || rr.top >= cr.bottom) clearRefFlash();
+  }, { passive: true });
+
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (specsOpen) {
@@ -242,6 +264,14 @@ function bindControls() {
  * rightward to cover the map + statewide summary. The grid cell keeps its
  * column space, so nothing reflows underneath the overlay. */
 let specsOpen = false;
+// the reference <li> currently showing the jump highlight, if any
+let flashedRef = null;
+function clearRefFlash() {
+  if (flashedRef) {
+    flashedRef.classList.remove("ref-flash");
+    flashedRef = null;
+  }
+}
 let specsAnimating = false;
 const FLIP_MS = 600;
 const EXPAND_MS = 750;
@@ -275,6 +305,7 @@ function openSpecs() {
 
 function closeSpecs() {
   if (!specsOpen || specsAnimating) return;
+  clearRefFlash(); // drop any reference highlight when leaving the about panel
   specsAnimating = true;
   // step 1: fade the content fully out before anything moves
   el.leftFlip.classList.remove("is-revealed");

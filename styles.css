@@ -237,8 +237,8 @@ sup .ref-link:hover,
 }
 .specs-refs li { margin-bottom: 10px; scroll-margin-top: 16px; }
 .specs-refs li:last-child { margin-bottom: 0; }
-/* briefly highlight a reference when jumped to */
-.specs-refs li:target { background: rgba(21, 69, 122, 0.09); border-radius: 4px; }
+/* highlight a reference when jumped to; JS clears it on scroll-away or exit */
+.specs-refs li.ref-flash { background: rgba(21, 69, 122, 0.09); border-radius: 4px; }
 .specs-close {
   position: absolute;
   top: 14px;
