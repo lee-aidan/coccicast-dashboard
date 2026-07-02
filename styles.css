@@ -189,6 +189,10 @@ h1, h2, h3 { font-weight: 600; margin: 0; }
   scroll-margin-top: 16px;
 }
 .specs-subhead:first-child { margin-top: 0; }
+/* tighten the gap between the byline/date and the first section heading */
+.specs-byline + .specs-subhead { margin-top: 8px; }
+/* italic CocciCast overhangs its trailing "?" — nudge the punctuation clear */
+.specs-subhead em { margin-right: 0.08em; }
 
 /* superscript / inline reference links jump to the References list */
 sup .ref-link,
@@ -224,6 +228,8 @@ sup .ref-link:hover,
   line-height: 1.6;
   color: var(--ink);
 }
+/* indent the model list so its numbers sit in from the body text */
+.specs-models { padding-left: 40px; }
 .specs-models li { margin-bottom: 6px; }
 .specs-refs {
   font-size: 0.82rem;
